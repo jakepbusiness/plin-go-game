@@ -1,4 +1,4 @@
-const { withWhopAppConfig } = require("@whop/react/next.config");
+import { withWhopAppConfig } from "@whop/react/next.config";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -12,4 +12,4 @@ const nextConfig = {
 	},
 };
 
-module.exports = withWhopAppConfig(nextConfig);
+export default withWhopAppConfig(nextConfig);
