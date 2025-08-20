@@ -17,6 +17,26 @@ export default function Page() {
 							<span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-accent-9 text-white mr-3">
 								1
 							</span>
+							Try the Plin-Go Game
+						</h2>
+						<p className="text-gray-6 ml-11 mb-4">
+							Experience our fully functional Plin-Go game with casino-style graphics, betting controls, and auto-play features.
+						</p>
+						<div className="ml-11">
+							<a
+								href="/plin-go"
+								className="inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-yellow-500 hover:to-orange-600 transition-all transform hover:scale-105"
+							>
+								🎰 Play Plin-Go
+							</a>
+						</div>
+					</div>
+
+					<div className="bg-white p-6 rounded-lg shadow-md">
+						<h2 className="text-5 font-semibold text-gray-9 mb-4 flex items-center">
+							<span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-accent-9 text-white mr-3">
+								2
+							</span>
 							Create your Whop app
 						</h2>
 						<p className="text-gray-6 ml-11">
@@ -36,7 +56,7 @@ export default function Page() {
 					<div className="bg-white p-6 rounded-lg shadow-md">
 						<h2 className="text-5 font-semibold text-gray-9 mb-4 flex items-center">
 							<span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-accent-9 text-white mr-3">
-								2
+								3
 							</span>
 							Set up environment variables
 						</h2>
@@ -68,7 +88,7 @@ export default function Page() {
 					<div className="bg-white p-6 rounded-lg shadow-md">
 						<h2 className="text-5 font-semibold text-gray-9 mb-4 flex items-center">
 							<span className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-accent-9 text-white mr-3">
-								3
+								4
 							</span>
 							Install your app into your whop
 						</h2>

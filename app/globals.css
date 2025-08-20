@@ -12,3 +12,85 @@ body {
 	color: var(--foreground);
 	font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom orange hover effects with maximum specificity */
+button.hover-orange-button {
+  transition: all 0.2s ease-in-out !important;
+}
+
+button.hover-orange-button:hover:not(:disabled) {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: white !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 10px 25px rgba(234, 88, 12, 0.25) !important;
+}
+
+input.hover-orange-input {
+  transition: all 0.2s ease-in-out !important;
+}
+
+input.hover-orange-input:hover {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: white !important;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1) !important;
+}
+
+select.hover-orange-select {
+  transition: all 0.2s ease-in-out !important;
+}
+
+select.hover-orange-select:hover {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: white !important;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1) !important;
+}
+
+input[type="checkbox"].hover-orange-checkbox {
+  transition: all 0.2s ease-in-out !important;
+}
+
+input[type="checkbox"].hover-orange-checkbox:hover {
+  accent-color: #ea580c !important;
+  transform: scale(1.1) !important;
+}
+
+input[type="range"].hover-orange-range {
+  transition: all 0.2s ease-in-out !important;
+}
+
+input[type="range"].hover-orange-range:hover {
+  accent-color: #ea580c !important;
+}
+
+/* Override any gray hover states */
+.hover\:bg-gray-600:hover {
+  background-color: #ea580c !important;
+}
+
+.hover\:bg-gray-700:hover {
+  background-color: #ea580c !important;
+}
+
+/* Force orange on all button hovers in the plin-go game */
+.w-80 button:hover {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: white !important;
+}
+
+/* Force orange on all input hovers in the plin-go game */
+.w-80 input:hover {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: white !important;
+}
+
+/* Force orange on all select hovers in the plin-go game */
+.w-80 select:hover {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: white !important;
+}

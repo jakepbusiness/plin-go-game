@@ -1,36 +1,114 @@
-This is a template for a whop app built in NextJS. Fork it and keep the parts you need for your app. 
+# Whop Plin-Go - Ultimate Casino Experience
 
-# Whop NextJS App Template
+A premium Plin-Go game built for the Whop app store, featuring addictive gameplay mechanics, stunning visuals, and exclusive features.
 
-To run this project: 
+## 🎮 Features
 
-1. Install dependencies with: `pnpm i`
+### Core Gameplay
+- **Dynamic 16-row Plin-Go board** with realistic physics
+- **Multiple risk levels** (Low, Medium, High) with different multiplier distributions
+- **Turbo Mode** with 2x speed for heart-pounding drops
+- **Jackpot Multiplier** reaching up to 1000x with countdown timer
 
-2. Create a Whop App on your [whop developer dashboard](https://whop.com/dashboard/developer/), then go to the "Hosting" section and:
-	- Ensure the "Base URL" is set to the domain you intend to deploy the site on.
-	- Ensure the "App path" is set to `/experiences/[experienceId]`
-	- Ensure the "Discover path" is set to `/discover` 
+### Power-Ups System
+- **Double Drop** - Extends chip path length
+- **Magnet Win** - Attracts chips to high-payout zones
+- **Lucky Bounce** - Increases jackpot odds
+- **Mega Multiplier** - 2x winnings for 5 drops
+- **Jackpot Boost** - 2x jackpot multiplier for 3 drops
+- **VIP Access** - Faster drops + higher payouts
+- **Mystery Box** - Random bonus or Mega Win ticket
 
-3. Copy the environment variables from the `.env.development` into a `.env.local`. Ensure to use real values from the whop dashboard.
+### Visual Customization
+- **Exclusive Skins**: Cyberpunk, Golden, Neon, Crystal, Whop Elite, Diamond
+- **Animated Avatars** with level progression
+- **Dynamic backgrounds** with particle effects
+- **Enhanced visual effects** with glowing elements and gradients
 
-4. Go to a whop created in the same org as the app you created. Navigate to the tools section and add your app.
+### Social Features
+- **Global Leaderboard** with real-time rankings across all Whop users
+- **Highest Score Tracking** - automatically saves your best performance
+- **Player Statistics** (Win Rate, Avg Multiplier, Streak, P/L)
+- **Achievement System** with level progression
+- **Whop User Profiles** - displays real Whop usernames and avatars
 
-5. Run `pnpm dev` to start the dev server. Then in the top right of the window find a translucent settings icon. Select "localhost". The default port 3000 should work.
+### Technical Features
+- **Responsive Design** optimized for mobile and desktop
+- **Haptic Feedback** for mobile devices
+- **Sound Effects** with dynamic audio based on wins
+- **Whop User Authentication** with secure API integration
+- **Persistent Leaderboard** with highest score tracking
+- **Real-time Data Sync** across all Whop users
+- **Whop Integration** with custom proxy setup
 
-## Deploying
+## 🚀 Getting Started
 
-1. Upload your fork / copy of this template to github. 
+1. **Install dependencies**:
+   ```bash
+   pnpm install
+   ```
 
-2. Go to [Vercel](https://vercel.com/new) and link the repository. Deploy your application with the environment variables from your `.env.local`
+2. **Start development server**:
+   ```bash
+   pnpm dev
+   ```
 
-3. If necessary update you "Base Domain" and webhook callback urls on the app settings page on the whop dashboard.
+3. **Access the game**:
+   - Main game: http://localhost:3000/plin-go
+   - Other pages: http://localhost:3000/discover, http://localhost:3000/experiences
 
-## Troubleshooting
+## 🎯 Game Mechanics
 
-**App not loading properly?** Make sure to set the "App path" in your Whop developer dashboard. The placeholder text in the UI does not mean it's set - you must explicitly enter `/experiences/[experienceId]` (or your chosen path name)
-a
+### Betting System
+- Set your bet amount with precision controls
+- Use -1/2 and 2x buttons for quick adjustments
+- Balance and points displayed in real-time
 
-**Make sure to add env.local** Make sure to get the real app environment vairables from your whop dashboard and set them in .env.local
+### Multiplier Distribution
+- **Low Risk**: Conservative payouts, higher win rate
+- **Medium Risk**: Balanced risk/reward
+- **High Risk**: Extreme payouts up to 1000x
 
+### Power-Up Strategy
+- Purchase power-ups with earned points
+- Combine multiple power-ups for maximum effect
+- Mystery boxes provide random rewards
 
-For more info, see our docs at https://dev.whop.com/introduction
+## 🎨 Design Philosophy
+
+Built with Whop's bold and innovative spirit, featuring:
+- **Deep black backgrounds** with navy-to-charcoal gradients
+- **Whop-branded orange accents** throughout the interface
+- **Premium casino aesthetics** with holographic effects
+- **Smooth animations** and responsive interactions
+
+## 🔧 Technical Stack
+
+- **Next.js 15** with App Router
+- **React 19** with modern hooks
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **Canvas API** for game rendering
+- **Web Audio API** for sound effects
+
+## 📱 Mobile Optimization
+
+- Touch-optimized controls
+- Responsive layout for all screen sizes
+- Haptic feedback integration
+- Mobile-first design approach
+
+## 🎪 Whop Integration
+
+- **Secure User Authentication** - Uses Whop's built-in authentication system
+- **Persistent User Data** - Game progress saved per Whop user account
+- **Global Leaderboard** - Compete with all Whop users worldwide
+- **Highest Score Protection** - Your best performance is always preserved
+- **Real-time Updates** - Leaderboard updates instantly across all users
+- **Whop-themed branding** and colors throughout the interface
+- **Optimized for Whop app store** requirements and guidelines
+- **Seamless integration** with Whop ecosystem and user management
+
+---
+
+**Experience the ultimate casino thrill with Whop Plin-Go!** 🎰✨
