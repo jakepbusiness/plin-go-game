@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
 	images: {
 		remotePatterns: [{ hostname: "**" }],
 	},
+	env: {
+		WHOP_API_KEY: process.env.WHOP_API_KEY,
+	},
 };
 
 export default withWhopAppConfig(nextConfig);
