@@ -11,28 +11,13 @@ export default function DebugPage() {
 							<div>
 								<strong>WHOP_API_KEY:</strong> 
 								<span className="ml-2 font-mono">
-									{process.env.WHOP_API_KEY ? 
-										`${process.env.WHOP_API_KEY.substring(0, 10)}...` : 
-										'NOT SET'
-									}
+									{process.env.WHOP_API_KEY ? 'SET' : 'NOT SET'}
 								</span>
 							</div>
 							<div>
 								<strong>NEXT_PUBLIC_WHOP_APP_ID:</strong> 
 								<span className="ml-2 font-mono">
 									{process.env.NEXT_PUBLIC_WHOP_APP_ID || 'NOT SET'}
-								</span>
-							</div>
-							<div>
-								<strong>NEXT_PUBLIC_WHOP_COMPANY_ID:</strong> 
-								<span className="ml-2 font-mono">
-									{process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'NOT SET'}
-								</span>
-							</div>
-							<div>
-								<strong>NEXT_PUBLIC_WHOP_AGENT_USER_ID:</strong> 
-								<span className="ml-2 font-mono">
-									{process.env.NEXT_PUBLIC_WHOP_AGENT_USER_ID || 'NOT SET'}
 								</span>
 							</div>
 						</div>
@@ -42,25 +27,14 @@ export default function DebugPage() {
 						<h3 className="text-md font-semibold mb-2">Status</h3>
 						<div className="space-y-1">
 							<div className={`inline-block px-2 py-1 rounded text-xs ${
-								process.env.WHOP_API_KEY && !process.env.WHOP_API_KEY.includes('get_this') 
-									? 'bg-green-100 text-green-800' 
-									: 'bg-red-100 text-red-800'
+								process.env.WHOP_API_KEY ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
 							}`}>
-								API Key: {process.env.WHOP_API_KEY && !process.env.WHOP_API_KEY.includes('get_this') ? '✅ Valid' : '❌ Invalid/Placeholder'}
+								API Key: {process.env.WHOP_API_KEY ? '✅ Valid' : '❌ Not Set'}
 							</div>
 							<div className={`inline-block px-2 py-1 rounded text-xs ${
-								process.env.NEXT_PUBLIC_WHOP_APP_ID && !process.env.NEXT_PUBLIC_WHOP_APP_ID.includes('use_the_corresponding') 
-									? 'bg-green-100 text-green-800' 
-									: 'bg-red-100 text-red-800'
+								process.env.NEXT_PUBLIC_WHOP_APP_ID ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
 							}`}>
-								App ID: {process.env.NEXT_PUBLIC_WHOP_APP_ID && !process.env.NEXT_PUBLIC_WHOP_APP_ID.includes('use_the_corresponding') ? '✅ Valid' : '❌ Invalid/Placeholder'}
-							</div>
-							<div className={`inline-block px-2 py-1 rounded text-xs ${
-								process.env.NEXT_PUBLIC_WHOP_COMPANY_ID && !process.env.NEXT_PUBLIC_WHOP_COMPANY_ID.includes('use_the_corresponding') 
-									? 'bg-green-100 text-green-800' 
-									: 'bg-red-100 text-red-800'
-							}`}>
-								Company ID: {process.env.NEXT_PUBLIC_WHOP_COMPANY_ID && !process.env.NEXT_PUBLIC_WHOP_COMPANY_ID.includes('use_the_corresponding') ? '✅ Valid' : '❌ Invalid/Placeholder'}
+								App ID: {process.env.NEXT_PUBLIC_WHOP_APP_ID ? '✅ Valid' : '❌ Not Set'}
 							</div>
 						</div>
 					</div>
@@ -71,7 +45,7 @@ export default function DebugPage() {
 					<ol className="list-decimal list-inside space-y-1 text-sm">
 						<li>Go to your <a href="https://whop.com/dashboard" target="_blank" rel="noopener" className="text-blue-600 underline">Whop Dashboard</a></li>
 						<li>Navigate to Developer → Your App → Settings</li>
-						<li>Copy the API Key, App ID, and Company ID</li>
+						<li>Copy the API Key and App ID</li>
 						<li>Update your <code className="bg-gray-200 px-1 rounded">.env</code> file with these values</li>
 						<li>Restart your development server</li>
 					</ol>
