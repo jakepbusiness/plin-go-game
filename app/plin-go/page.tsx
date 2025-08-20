@@ -143,7 +143,7 @@ export default function PlinGoPage() {
   useEffect(() => {
     if (!isLoading) {
       // Save user data
-              fetch('/api/plin-go/user-data', {
+      fetch('/api/plin-go/user-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -159,10 +159,11 @@ export default function PlinGoPage() {
           streak,
           winRate,
           avgMultiplier,
-          profitLoss
+          profitLoss,
+          isPlaying: isPlaying // Include current playing status
         })
       }).catch(error => {
-        console.error('Error saving user data:', error);
+        // console.error('Error saving user data:', error); // Removed console.log
       });
 
       // Update leaderboard with current stats
@@ -182,7 +183,8 @@ export default function PlinGoPage() {
           totalWagered,
           biggestWin,
           level: playerLevel,
-          avatar: playerAvatar
+          avatar: playerAvatar,
+          isPlaying: isPlaying // Include current playing status
         })
       })
       .then(response => response.json())
@@ -192,10 +194,10 @@ export default function PlinGoPage() {
         }
       })
       .catch(error => {
-        console.error('Error updating leaderboard:', error);
+        // console.error('Error updating leaderboard:', error); // Removed console.log
       });
     }
-  }, [balance, points, gameHistory, playerName, selectedSkin, playerAvatar, playerLevel, streak, winRate, avgMultiplier, profitLoss, isLoading]);
+  }, [balance, points, gameHistory, playerName, selectedSkin, playerAvatar, playerLevel, streak, winRate, avgMultiplier, profitLoss, isLoading, isPlaying]);
 
   // Live leaderboard updates - poll every 5 seconds with better error handling
   useEffect(() => {
@@ -258,19 +260,20 @@ export default function PlinGoPage() {
             totalWagered,
             biggestWin,
             level: playerLevel,
-            avatar: playerAvatar
+            avatar: playerAvatar,
+            isPlaying: isPlaying // Send current playing status
           }),
           signal: controller.signal
         });
         
         clearTimeout(timeoutId);
-              } catch (error) {
-          if (error instanceof Error && error.name === 'AbortError') {
-            console.log('Heartbeat request timed out');
-          } else {
-            console.error('Error sending heartbeat:', error);
-          }
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          // console.log('Heartbeat request timed out'); // Removed console.log
+        } else {
+          // console.error('Error sending heartbeat:', error); // Removed console.log
         }
+      }
     };
 
     // Update immediately
@@ -285,7 +288,7 @@ export default function PlinGoPage() {
       clearInterval(leaderboardInterval);
       clearInterval(heartbeatInterval);
     };
-  }, [isLoading, points, balance, gameHistory, playerLevel, playerAvatar]);
+  }, [isLoading, points, balance, gameHistory, playerLevel, playerAvatar, isPlaying]);
 
   const handlePlay = useCallback((bet: number) => {
     if (bet > balance || bet <= 0) return;
@@ -334,18 +337,19 @@ export default function PlinGoPage() {
           totalWagered,
           biggestWin,
           level: playerLevel,
-          avatar: playerAvatar
+          avatar: playerAvatar,
+          isPlaying: true // Player is actively playing when game result is sent
         })
       })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
           setLeaderboard(data.leaderboard);
-          console.log('Leaderboard updated with game result');
+          // console.log('Leaderboard updated with game result'); // Removed console.log
         }
       })
       .catch(error => {
-        console.error('Error updating leaderboard:', error);
+        // console.error('Error updating leaderboard:', error); // Removed console.log
       });
       
       return updatedHistory;

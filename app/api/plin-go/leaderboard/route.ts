@@ -19,10 +19,11 @@ const leaderboardData = new Map<string, {
   lastUpdated: number;
   isOnline: boolean;
   lastActivity: number;
+  isPlaying: boolean; // Track if player is actively playing
 }>();
 
-// Track active players (online in last 5 minutes)
-const ACTIVE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+// Track active players (online in last 2 minutes for more live feel)
+const ACTIVE_TIMEOUT = 2 * 60 * 1000; // 2 minutes
 
 // Add some sample data for testing
 const sampleUsers = [
@@ -41,7 +42,8 @@ const sampleUsers = [
     whopAvatarUrl: '/api/plin-go/avatar/whop_user_1',
     lastUpdated: Date.now(),
     isOnline: true,
-    lastActivity: Date.now()
+    lastActivity: Date.now(),
+    isPlaying: true
   },
   {
     userId: 'whop_user_2',
@@ -58,7 +60,8 @@ const sampleUsers = [
     whopAvatarUrl: '/api/plin-go/avatar/whop_user_2',
     lastUpdated: Date.now(),
     isOnline: true,
-    lastActivity: Date.now()
+    lastActivity: Date.now(),
+    isPlaying: true
   },
   {
     userId: 'whop_user_3',
@@ -75,7 +78,8 @@ const sampleUsers = [
     whopAvatarUrl: '/api/plin-go/avatar/whop_user_3',
     lastUpdated: Date.now(),
     isOnline: false,
-    lastActivity: Date.now() - 10 * 60 * 1000 // 10 minutes ago
+    lastActivity: Date.now() - 10 * 60 * 1000, // 10 minutes ago
+    isPlaying: false
   }
 ];
 
@@ -88,8 +92,9 @@ export async function GET(request: NextRequest) {
   try {
     const now = Date.now();
     
-    // Get only active players (online in last 5 minutes) sorted by points
-    const activePlayers = Array.from(leaderboardData.values())
+    // Get only active players (online in last 2 minutes) sorted by points
+    const allPlayers = Array.from(leaderboardData.values());
+    const activePlayers = allPlayers
       .filter(player => {
         const isActive = (now - player.lastActivity) < ACTIVE_TIMEOUT;
         // Update online status
@@ -98,17 +103,13 @@ export async function GET(request: NextRequest) {
         }
         return isActive;
       })
-      .sort((a, b) => b.points - a.points)
-      .slice(0, 10);
+      .sort((a, b) => b.points - a.points);
     
-    console.log('Active leaderboard data:', activePlayers.length, 'players online');
-    activePlayers.forEach((player, index) => {
-      console.log(`${index + 1}. ${player.whopUsername || player.name} - ${player.points} points (${player.isOnline ? '🟢' : '🔴'})`);
-    });
+    // Safe slice operation with type check
+    const topPlayers = Array.isArray(activePlayers) ? activePlayers.slice(0, 10) : [];
     
-    return NextResponse.json({ leaderboard: activePlayers });
+    return NextResponse.json({ leaderboard: topPlayers });
   } catch (error) {
-    console.error('Error fetching leaderboard:', error);
     return NextResponse.json({ leaderboard: [] }, { status: 500 });
   }
 }
@@ -119,6 +120,7 @@ export async function POST(request: NextRequest) {
     let userId = 'anonymous';
     let username = 'Anonymous';
     let name = 'Anonymous Player';
+    let whopUsername: string | undefined;
     
     let whopAvatarUrl: string | undefined;
     
@@ -130,16 +132,17 @@ export async function POST(request: NextRequest) {
       const user = await whopSdk.users.getUser({ userId });
       username = user.username;
       name = user.name || user.username;
+      whopUsername = user.username; // Only show Whop username when actively playing
       
       // Get user's Whop profile picture URL through our proxy
       whopAvatarUrl = `/api/plin-go/avatar/${userId}`;
     } catch (authError) {
       // If no valid token, use anonymous user
-      console.log('No valid Whop token, using anonymous user');
+      // Silent error handling for production
     }
     
     const body = await request.json();
-    const { points, balance, wins, totalWagered, biggestWin, level, avatar } = body;
+    const { points, balance, wins, totalWagered, biggestWin, level, avatar, isPlaying = true } = body;
     
     // Update or create user data
     const existingData = leaderboardData.get(userId);
@@ -147,7 +150,7 @@ export async function POST(request: NextRequest) {
     const updatedData = {
       userId,
       username,
-      whopUsername: userId === 'anonymous' ? undefined : username,
+      whopUsername: isPlaying ? whopUsername : undefined, // Only show Whop username when playing
       name,
       points: Math.max(points, existingData?.points || 0), // Keep highest score
       balance: Math.max(balance, existingData?.balance || 0), // Keep highest balance
@@ -159,15 +162,16 @@ export async function POST(request: NextRequest) {
       whopAvatarUrl: whopAvatarUrl || existingData?.whopAvatarUrl,
       lastUpdated: now,
       isOnline: true,
-      lastActivity: now
+      lastActivity: now,
+      isPlaying: isPlaying // Track if player is actively playing
     };
     
     leaderboardData.set(userId, updatedData);
     
-    // Get updated leaderboard
-    const topPlayers = Array.from(leaderboardData.values())
-      .sort((a, b) => b.points - a.points)
-      .slice(0, 10);
+    // Get updated leaderboard with safe slice operation
+    const allPlayers = Array.from(leaderboardData.values());
+    const sortedPlayers = allPlayers.sort((a, b) => b.points - a.points);
+    const topPlayers = Array.isArray(sortedPlayers) ? sortedPlayers.slice(0, 10) : [];
     
     return NextResponse.json({ 
       success: true, 
@@ -175,7 +179,6 @@ export async function POST(request: NextRequest) {
       userData: updatedData
     });
   } catch (error) {
-    console.error('Error updating leaderboard:', error);
     return NextResponse.json({ error: 'Failed to update leaderboard' }, { status: 200 });
   }
 }
