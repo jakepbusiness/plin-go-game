@@ -8,7 +8,6 @@ const leaderboardData = new Map<string, {
   username: string;
   whopUsername?: string;
   name: string;
-  points: number;
   balance: number;
   wins: number;
   totalWagered: number;
@@ -32,7 +31,6 @@ const sampleUsers = [
     username: 'whop_user_1',
     whopUsername: 'jake_plingo',
     name: 'Jake PlinGo',
-    points: 25000,
     balance: 500000,
     wins: 15,
     totalWagered: 1000000,
@@ -50,7 +48,6 @@ const sampleUsers = [
     username: 'whop_user_2',
     whopUsername: 'sarah_casino',
     name: 'Sarah Casino',
-    points: 18000,
     balance: 300000,
     wins: 12,
     totalWagered: 800000,
@@ -68,7 +65,6 @@ const sampleUsers = [
     username: 'whop_user_3',
     whopUsername: 'mike_winner',
     name: 'Mike Winner',
-    points: 12000,
     balance: 200000,
     wins: 8,
     totalWagered: 600000,
@@ -92,7 +88,7 @@ export async function GET(request: NextRequest) {
   try {
     const now = Date.now();
     
-    // Get only active players (online in last 2 minutes) sorted by points
+    // Get only active players (online in last 2 minutes) sorted by balance
     const allPlayers = Array.from(leaderboardData.values());
     const activePlayers = allPlayers
       .filter(player => {
@@ -103,7 +99,7 @@ export async function GET(request: NextRequest) {
         }
         return isActive;
       })
-      .sort((a, b) => b.points - a.points);
+      .sort((a, b) => b.balance - a.balance);
     
     // Safe slice operation with type check
     const topPlayers = Array.isArray(activePlayers) ? activePlayers.slice(0, 10) : [];
@@ -142,7 +138,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json();
-    const { points, balance, wins, totalWagered, biggestWin, level, avatar, isPlaying = true } = body;
+    const { balance, wins, totalWagered, biggestWin, level, avatar, isPlaying = true } = body;
     
     // Update or create user data
     const existingData = leaderboardData.get(userId);
@@ -152,7 +148,6 @@ export async function POST(request: NextRequest) {
       username,
       whopUsername: isPlaying ? whopUsername : undefined, // Only show Whop username when playing
       name,
-      points: Math.max(points, existingData?.points || 0), // Keep highest score
       balance: Math.max(balance, existingData?.balance || 0), // Keep highest balance
       wins: Math.max(wins, existingData?.wins || 0),
       totalWagered: Math.max(totalWagered, existingData?.totalWagered || 0),
@@ -170,7 +165,7 @@ export async function POST(request: NextRequest) {
     
     // Get updated leaderboard with safe slice operation
     const allPlayers = Array.from(leaderboardData.values());
-    const sortedPlayers = allPlayers.sort((a, b) => b.points - a.points);
+    const sortedPlayers = allPlayers.sort((a, b) => b.balance - a.balance);
     const topPlayers = Array.isArray(sortedPlayers) ? sortedPlayers.slice(0, 10) : [];
     
     return NextResponse.json({ 

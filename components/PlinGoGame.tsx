@@ -9,7 +9,6 @@ interface PlinGoGameProps {
   onGameResult: (multiplier: number, bet: number) => void;
   betAmount: number;
   selectedSkin?: string;
-  activePowerUps?: string[];
 }
 
 interface Ball {
@@ -92,7 +91,7 @@ const adjustBrightness = (color: string, percent: number) => {
     (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
 };
 
-export function PlinGoGame({ rows, riskLevel, isPlaying, onGameResult, betAmount, selectedSkin = 'cyberpunk', activePowerUps = [] }: PlinGoGameProps) {
+export function PlinGoGame({ rows, riskLevel, isPlaying, onGameResult, betAmount, selectedSkin = 'cyberpunk' }: PlinGoGameProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | undefined>(undefined);
   const [multipliers, setMultipliers] = useState<number[]>([]);
@@ -100,11 +99,6 @@ export function PlinGoGame({ rows, riskLevel, isPlaying, onGameResult, betAmount
   const [pegs, setPegs] = useState<Peg[]>([]);
   const [ball, setBall] = useState<Ball | null>(null);
   const [gameState, setGameState] = useState<'idle' | 'dropping' | 'finished'>('idle');
-
-  // Debug: Log skin changes
-  useEffect(() => {
-    console.log('Selected skin changed to:', selectedSkin);
-  }, [selectedSkin]);
 
   // Initialize game board
   useEffect(() => {
@@ -199,7 +193,6 @@ export function PlinGoGame({ rows, riskLevel, isPlaying, onGameResult, betAmount
         color: '#ffffff'
       };
 
-      console.log('Creating ball:', newBall); // Debug log
       setBall(newBall);
       setGameState('dropping');
     }
@@ -219,11 +212,6 @@ export function PlinGoGame({ rows, riskLevel, isPlaying, onGameResult, betAmount
 
     const gameLoop = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Debug: Log if ball exists and game state
-      if (ball && gameState === 'dropping') {
-        console.log('Ball position:', ball.x, ball.y);
-      }
 
       // Draw background with enhanced skin-based gradient
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -480,7 +468,7 @@ export function PlinGoGame({ rows, riskLevel, isPlaying, onGameResult, betAmount
           }, 500);
         }
 
-        // Draw ball with simple styling for debugging
+        // Draw ball with simple styling
         ctx.fillStyle = '#ff0000'; // Bright red for visibility
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
@@ -491,25 +479,13 @@ export function PlinGoGame({ rows, riskLevel, isPlaying, onGameResult, betAmount
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Add enhanced glow effect
-        const glowColor = activePowerUps.includes('mega-multiplier') ? '#ffd700' :
-                         activePowerUps.includes('jackpot-boost') ? '#ff6b6b' :
-                         activePowerUps.includes('vip-access') ? '#a55eea' : '#ffffff';
-        
-        ctx.shadowColor = glowColor;
-        ctx.shadowBlur = activePowerUps.length > 0 ? 15 : 8;
+        // Add glow effect
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
-        
-        // Add power-up indicator
-        if (activePowerUps.length > 0) {
-          ctx.fillStyle = glowColor;
-          ctx.font = 'bold 12px Arial';
-          ctx.textAlign = 'center';
-          ctx.fillText('⚡', ball.x, ball.y - ball.radius - 10);
-        }
       }
 
       animationRef.current = requestAnimationFrame(gameLoop);
@@ -522,7 +498,7 @@ export function PlinGoGame({ rows, riskLevel, isPlaying, onGameResult, betAmount
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [ball, gameState, pegs, slots, onGameResult, betAmount, selectedSkin, activePowerUps]);
+  }, [ball, gameState, pegs, slots, onGameResult, betAmount, selectedSkin]);
 
   const createParticleEffect = (x: number, y: number) => {
     // Simple particle effect for big wins

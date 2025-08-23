@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation';
+import PlinGoPage from './plin-go/page';
 
 export default function Page() {
-	// Permanent redirect to the Plin-Go game
-	redirect('/plin-go');
+	return <PlinGoPage />;
 }

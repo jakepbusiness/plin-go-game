@@ -4,28 +4,23 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { PlinGoGame } from '@/components/PlinGoGame';
 import { PlinGoStats } from '@/components/PlinGoStats';
 
-
 export default function PlinGoPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [playerName, setPlayerName] = useState('Player');
   const [balance, setBalance] = useState(1000000);
-  const [points, setPoints] = useState(10000);
   const [betAmount, setBetAmount] = useState(0);
   const [riskLevel, setRiskLevel] = useState<'low' | 'medium' | 'high'>('high');
   const [rows, setRows] = useState(16);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [turboMode, setTurboMode] = useState(false);
-  const [jackpotMultiplier, setJackpotMultiplier] = useState(1000);
   const [selectedSkin, setSelectedSkin] = useState('cyberpunk');
-  const [activePowerUps, setActivePowerUps] = useState<string[]>([]);
   const [playerLevel, setPlayerLevel] = useState(1);
   const [playerAvatar, setPlayerAvatar] = useState('default');
   const [streak, setStreak] = useState(0);
   const [winRate, setWinRate] = useState(0);
   const [avgMultiplier, setAvgMultiplier] = useState(0);
   const [profitLoss, setProfitLoss] = useState(0);
-  const [nextJackpotTime, setNextJackpotTime] = useState(Date.now() + 300000); // 5 minutes
   const [autoPlaySettings, setAutoPlaySettings] = useState({
     balls: 10,
     stopOnLoss: false,
@@ -43,7 +38,7 @@ export default function PlinGoPage() {
     username: string;
     whopUsername?: string;
     name: string;
-    points: number;
+    balance: number;
     wins: number;
     totalWagered: number;
     biggestWin: number;
@@ -54,37 +49,15 @@ export default function PlinGoPage() {
   }>>([]);
   const [leaderboardError, setLeaderboardError] = useState<string | null>(null);
 
-  // Power-ups available for purchase
-  const powerUps = [
-    { id: 'double-drop', name: 'Double Drop', cost: 500, description: 'Doubles chip path length', icon: '⚡' },
-    { id: 'magnet-win', name: 'Magnet Win', cost: 800, description: 'Attracts to high-payout zones', icon: '🧲' },
-    { id: 'lucky-bounce', name: 'Lucky Bounce', cost: 1200, description: 'Increases jackpot odds', icon: '🍀' },
-    { id: 'mega-multiplier', name: 'Mega Multiplier', cost: 2000, description: '2x winnings for 5 drops', icon: '💎' },
-    { id: 'jackpot-boost', name: 'Jackpot Boost', cost: 5000, description: '2x jackpot multiplier for 3 drops', icon: '🎰' },
-    { id: 'vip-access', name: 'VIP Access', cost: 10000, description: 'Faster drops + higher payouts', icon: '👑' },
-    { id: 'mystery-box', name: 'Mystery Box', cost: 3000, description: 'Random bonus or Mega Win ticket', icon: '🎁' },
-    { id: 'mega-win-ticket', name: 'Mega Win Ticket', cost: 15000, description: 'Guaranteed high multiplier', icon: '🎫' }
-  ];
-
-  // Available skins - make it state so it can be updated
+  // Available skins - simplified without points system
   const [skins, setSkins] = useState([
-    { id: 'cyberpunk', name: 'Cyberpunk', cost: 0, unlocked: true },
-    { id: 'golden', name: 'Golden', cost: 5000, unlocked: true }, // Unlocked for testing
-    { id: 'neon', name: 'Neon', cost: 8000, unlocked: true }, // Unlocked for testing
-    { id: 'crystal', name: 'Crystal', cost: 15000, unlocked: true }, // Unlocked for testing
-    { id: 'whop-elite', name: 'Whop Elite', cost: 25000, unlocked: true }, // Unlocked for testing
-    { id: 'diamond', name: 'Diamond', cost: 50000, unlocked: true } // Unlocked for testing
+    { id: 'cyberpunk', name: 'Cyberpunk', unlocked: true },
+    { id: 'golden', name: 'Golden', unlocked: true },
+    { id: 'neon', name: 'Neon', unlocked: true },
+    { id: 'crystal', name: 'Crystal', unlocked: true },
+    { id: 'whop-elite', name: 'Whop Elite', unlocked: true },
+    { id: 'diamond', name: 'Diamond', unlocked: true }
   ]);
-
-  // Available avatars
-  const avatars = [
-    { id: 'default', name: 'Default', cost: 0, unlocked: true },
-    { id: 'cyberpunk', name: 'Cyberpunk', cost: 10000, unlocked: false },
-    { id: 'golden', name: 'Golden', cost: 20000, unlocked: false },
-    { id: 'neon', name: 'Neon', cost: 30000, unlocked: false },
-    { id: 'crystal', name: 'Crystal', cost: 40000, unlocked: false },
-    { id: 'whop-elite', name: 'Whop Elite', cost: 100000, unlocked: false }
-  ];
 
   // Load game state from API on mount
   useEffect(() => {
@@ -105,7 +78,6 @@ export default function PlinGoPage() {
           // Use Whop username if available, otherwise use stored player name
           setPlayerName(userData.whopUsername || userData.playerName || 'Player');
           setBalance(userData.balance);
-          setPoints(userData.points);
           setGameHistory(userData.gameHistory);
           setPlayerLevel(userData.playerLevel);
           setPlayerAvatar(userData.playerAvatar);
@@ -120,7 +92,6 @@ export default function PlinGoPage() {
         
         if (leaderboardResponse.ok) {
           const leaderboardData = await leaderboardResponse.json();
-          console.log('Leaderboard data received:', leaderboardData.leaderboard);
           setLeaderboard(leaderboardData.leaderboard);
         } else {
           console.warn('Leaderboard response not ok:', leaderboardResponse.status);
@@ -150,7 +121,6 @@ export default function PlinGoPage() {
         },
         body: JSON.stringify({
           balance,
-          points,
           gameHistory,
           playerName,
           selectedSkin,
@@ -160,10 +130,10 @@ export default function PlinGoPage() {
           winRate,
           avgMultiplier,
           profitLoss,
-          isPlaying: isPlaying // Include current playing status
+          isPlaying: isPlaying
         })
       }).catch(error => {
-        // console.error('Error saving user data:', error); // Removed console.log
+        // Silent error handling for production
       });
 
       // Update leaderboard with current stats
@@ -177,14 +147,13 @@ export default function PlinGoPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          points,
           balance,
           wins: totalWins,
           totalWagered,
           biggestWin,
           level: playerLevel,
           avatar: playerAvatar,
-          isPlaying: isPlaying // Include current playing status
+          isPlaying: isPlaying
         })
       })
       .then(response => response.json())
@@ -194,10 +163,10 @@ export default function PlinGoPage() {
         }
       })
       .catch(error => {
-        // console.error('Error updating leaderboard:', error); // Removed console.log
+        // Silent error handling for production
       });
     }
-  }, [balance, points, gameHistory, playerName, selectedSkin, playerAvatar, playerLevel, streak, winRate, avgMultiplier, profitLoss, isLoading, isPlaying]);
+  }, [balance, gameHistory, playerName, selectedSkin, playerAvatar, playerLevel, streak, winRate, avgMultiplier, profitLoss, isLoading, isPlaying]);
 
   // Live leaderboard updates - poll every 5 seconds with better error handling
   useEffect(() => {
@@ -227,17 +196,17 @@ export default function PlinGoPage() {
           console.warn('Leaderboard response not ok:', response.status);
           setLeaderboardError('Server error - retrying...');
         }
-              } catch (error) {
-          if (error instanceof Error && error.name === 'AbortError') {
-            console.log('Leaderboard request timed out');
-            setLeaderboardError('Connection timeout - retrying...');
-          } else {
-            console.error('Error updating live leaderboard:', error);
-            setLeaderboardError('Failed to load leaderboard');
-          }
-        } finally {
-          isUpdating = false;
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.log('Leaderboard request timed out');
+          setLeaderboardError('Connection timeout - retrying...');
+        } else {
+          console.error('Error updating live leaderboard:', error);
+          setLeaderboardError('Failed to load leaderboard');
         }
+      } finally {
+        isUpdating = false;
+      }
     };
 
     const sendHeartbeat = async () => {
@@ -254,14 +223,13 @@ export default function PlinGoPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            points,
             balance,
             wins: totalWins,
             totalWagered,
             biggestWin,
             level: playerLevel,
             avatar: playerAvatar,
-            isPlaying: isPlaying // Send current playing status
+            isPlaying: isPlaying
           }),
           signal: controller.signal
         });
@@ -269,9 +237,9 @@ export default function PlinGoPage() {
         clearTimeout(timeoutId);
       } catch (error) {
         if (error instanceof Error && error.name === 'AbortError') {
-          // console.log('Heartbeat request timed out'); // Removed console.log
+          // Silent timeout handling
         } else {
-          // console.error('Error sending heartbeat:', error); // Removed console.log
+          // Silent error handling for production
         }
       }
     };
@@ -282,13 +250,13 @@ export default function PlinGoPage() {
 
     // Set up polling every 5 seconds (reduced frequency)
     const leaderboardInterval = setInterval(updateLeaderboard, 5000);
-    const heartbeatInterval = setInterval(sendHeartbeat, 60000); // Heartbeat every 60 seconds (reduced frequency)
+    const heartbeatInterval = setInterval(sendHeartbeat, 60000); // Heartbeat every 60 seconds
 
     return () => {
       clearInterval(leaderboardInterval);
       clearInterval(heartbeatInterval);
     };
-  }, [isLoading, points, balance, gameHistory, playerLevel, playerAvatar, isPlaying]);
+  }, [isLoading, balance, gameHistory, playerLevel, playerAvatar, isPlaying]);
 
   const handlePlay = useCallback((bet: number) => {
     if (bet > balance || bet <= 0) return;
@@ -299,10 +267,8 @@ export default function PlinGoPage() {
 
   const handleGameResult = useCallback((multiplier: number, bet: number) => {
     const win = bet * multiplier;
-    const pointsEarned = Math.floor(win * 0.1); // 10% of winnings as points
     
     setBalance(prev => prev + win);
-    setPoints(prev => prev + pointsEarned);
     
     const result = {
       bet,
@@ -321,7 +287,6 @@ export default function PlinGoPage() {
       const biggestWin = updatedHistory.length > 0 ? Math.max(...updatedHistory.map(r => r.win)) : 0;
       
       // Calculate updated values for leaderboard
-      const updatedPoints = points + pointsEarned;
       const updatedBalance = balance + win;
       
       // Immediately update leaderboard with game result
@@ -331,85 +296,30 @@ export default function PlinGoPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          points: updatedPoints,
           balance: updatedBalance,
           wins: totalWins,
           totalWagered,
           biggestWin,
           level: playerLevel,
           avatar: playerAvatar,
-          isPlaying: true // Player is actively playing when game result is sent
+          isPlaying: true
         })
       })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
           setLeaderboard(data.leaderboard);
-          // console.log('Leaderboard updated with game result'); // Removed console.log
         }
       })
       .catch(error => {
-        // console.error('Error updating leaderboard:', error); // Removed console.log
+        // Silent error handling for production
       });
       
       return updatedHistory;
     });
     
     setIsPlaying(false);
-  }, [playerName, points, balance, playerLevel, playerAvatar]);
-
-  const purchasePowerUp = (powerUp: any) => {
-    if (points >= powerUp.cost) {
-      setPoints(prev => prev - powerUp.cost);
-      
-      // Special handling for mystery box
-      if (powerUp.id === 'mystery-box') {
-        const rewards = [
-          { type: 'points' as const, amount: 1000 },
-          { type: 'points' as const, amount: 2000 },
-          { type: 'points' as const, amount: 5000 },
-          { type: 'mega-win' as const, multiplier: 10 },
-          { type: 'jackpot-boost' as const, duration: 3 }
-        ];
-        const reward = rewards[Math.floor(Math.random() * rewards.length)];
-        
-        if (reward.type === 'points') {
-          setPoints(prev => prev + reward.amount);
-        } else if (reward.type === 'mega-win') {
-          // Add a guaranteed high multiplier for next game
-          setActivePowerUps(prev => [...prev, 'mega-win-ticket']);
-          // Remove after 3 games
-          setTimeout(() => {
-            setActivePowerUps(prev => prev.filter(id => id !== 'mega-win-ticket'));
-          }, 15000);
-        } else if (reward.type === 'jackpot-boost') {
-          setActivePowerUps(prev => [...prev, 'jackpot-boost']);
-          // Remove after 3 games
-          setTimeout(() => {
-            setActivePowerUps(prev => prev.filter(id => id !== 'jackpot-boost'));
-          }, 15000);
-        }
-      } else {
-        // For non-mystery box power-ups, add to active power-ups
-        setActivePowerUps(prev => [...prev, powerUp.id]);
-        
-        // Remove power-up after 5 games
-        setTimeout(() => {
-          setActivePowerUps(prev => prev.filter(id => id !== powerUp.id));
-        }, 5000);
-      }
-    }
-  };
-
-  const purchaseSkin = (skin: any) => {
-    if (points >= skin.cost && !skin.unlocked) {
-      setPoints(prev => prev - skin.cost);
-      // Unlock the skin
-      setSkins(prev => prev.map(s => 
-        s.id === skin.id ? { ...s, unlocked: true } : s
-      ));
-    }
-  };
+  }, [balance, playerLevel, playerAvatar]);
 
   const handleAutoPlay = useCallback(() => {
     if (isAutoPlaying) {
@@ -460,22 +370,6 @@ export default function PlinGoPage() {
       return () => clearTimeout(timer);
     }
   }, [isAutoPlaying, isPlaying, betAmount, balance, turboMode, autoPlaySettings.speed, handlePlay]);
-
-  // Jackpot countdown timer
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setNextJackpotTime(prev => {
-        if (prev <= Date.now()) {
-          // Reset jackpot timer and increase multiplier
-          setJackpotMultiplier(prev => Math.min(prev + 100, 2000));
-          return Date.now() + 300000; // 5 minutes
-        }
-        return prev;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   // Update game statistics
   useEffect(() => {
@@ -542,17 +436,11 @@ export default function PlinGoPage() {
               <p className="text-orange-300 text-xs font-semibold uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.6)] text-center w-full">Ultimate Plin-Go Experience</p>
             </div>
 
-
-
-            {/* Balance & Points with holographic effect */}
+            {/* Balance with holographic effect */}
             <div className="bg-gradient-to-r from-purple-900/60 to-blue-900/60 rounded-lg p-2 border border-purple-500/40 shadow-lg shadow-purple-500/20">
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex justify-between items-center">
                 <span className="text-xs font-bold text-purple-300 uppercase tracking-wider">Balance</span>
                 <span className="text-sm font-bold text-green-400 animate-pulse">${balance.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-orange-300 uppercase tracking-wider">Points</span>
-                <span className="text-sm font-bold text-orange-400 animate-pulse">{points.toLocaleString()}</span>
               </div>
             </div>
 
@@ -630,18 +518,6 @@ export default function PlinGoPage() {
                     {turboMode ? 'ON' : 'OFF'}
                   </span>
                 </label>
-              </div>
-            </div>
-
-            {/* Jackpot Multiplier with 3D effect */}
-            <div className="bg-gradient-to-r from-yellow-500/30 to-orange-500/30 rounded-lg p-3 border border-yellow-500/50 shadow-lg shadow-yellow-500/30">
-              <div className="text-center">
-                <div className="text-xs text-yellow-300 uppercase tracking-wider font-bold mb-1">Jackpot Multiplier</div>
-                <div className="text-2xl font-bold text-yellow-400 animate-pulse transform hover:scale-110 transition-transform duration-300">{jackpotMultiplier}x</div>
-                <div className="text-xs text-orange-300 font-semibold mt-1">Next Big Win</div>
-                <div className="text-xs text-gray-400 mt-1">
-                  {Math.floor((nextJackpotTime - Date.now()) / 1000)}s
-                </div>
               </div>
             </div>
 
@@ -733,55 +609,6 @@ export default function PlinGoPage() {
               </div>
             </div>
 
-            {/* Power-Ups */}
-            <div>
-              <h3 className="text-xs font-bold text-orange-300 mb-2 uppercase tracking-wider">Power-Ups</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {powerUps.map((powerUp) => (
-                  <div key={powerUp.id} className="relative">
-                    {/* Whop Glow Background */}
-                    <div className={`absolute inset-0 rounded-lg transition-all duration-300 ${
-                      points >= powerUp.cost
-                        ? 'bg-gradient-to-r from-orange-500/10 to-red-500/10 shadow-[0_0_15px_rgba(249,115,22,0.3)] hover:shadow-[0_0_20px_rgba(249,115,22,0.5)]'
-                        : 'bg-gradient-to-r from-gray-500/5 to-gray-600/5 shadow-[0_0_5px_rgba(75,85,99,0.2)]'
-                    }`}></div>
-                    
-                    <button
-                      onClick={() => purchasePowerUp(powerUp)}
-                      disabled={points < powerUp.cost}
-                      className={`relative z-10 w-full p-2 rounded-lg text-xs font-bold transition-all duration-300 border-2 ${
-                        points >= powerUp.cost
-                          ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-400 hover:to-red-400 hover:scale-105 hover:shadow-[0_0_25px_rgba(249,115,22,0.6)] border-orange-400/50 hover:border-orange-300'
-                          : 'bg-gray-700 text-gray-400 cursor-not-allowed border-gray-600'
-                      }`}
-                    >
-                      <div className="text-sm mb-1">{powerUp.icon}</div>
-                      <div className="text-xs font-semibold">{powerUp.name}</div>
-                      <div className="text-xs opacity-75">{powerUp.cost} pts</div>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Active Power-Ups */}
-            {activePowerUps.length > 0 && (
-              <div>
-                <h3 className="text-xs font-bold text-green-300 mb-1 uppercase tracking-wider">Active</h3>
-                <div className="flex gap-1">
-                  {activePowerUps.map((powerUpId, index) => {
-                    const powerUp = powerUps.find(p => p.id === powerUpId);
-                    return (
-                      <div key={`${powerUpId}-${index}`} className="bg-green-500/20 border border-green-500/30 rounded px-1 py-0.5">
-                        <div className="text-xs">{powerUp?.icon}</div>
-                        <div className="text-xs text-green-300">{powerUp?.name}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
             {/* Auto Play Settings */}
             {isAutoPlaying && (
               <div className="space-y-1 pt-1 border-t border-white/10">
@@ -821,15 +648,15 @@ export default function PlinGoPage() {
 
                 <div>
                   <label className="flex items-center cursor-pointer group hover:scale-105 transition-all duration-300">
-                                      <input
-                    type="checkbox"
-                    checked={autoPlaySettings.stopOnLoss}
-                    onChange={(e) => setAutoPlaySettings({
-                      ...autoPlaySettings,
-                      stopOnLoss: e.target.checked
-                    })}
-                    className="mr-2 accent-orange-500 hover:accent-orange-400 transition-all duration-300 transform group-hover:scale-110"
-                  />
+                    <input
+                      type="checkbox"
+                      checked={autoPlaySettings.stopOnLoss}
+                      onChange={(e) => setAutoPlaySettings({
+                        ...autoPlaySettings,
+                        stopOnLoss: e.target.checked
+                      })}
+                      className="mr-2 accent-orange-500 hover:accent-orange-400 transition-all duration-300 transform group-hover:scale-110"
+                    />
                     <span className="text-xs text-white group-hover:text-orange-300 transition-colors duration-200 font-bold">Stop on Loss</span>
                   </label>
                 </div>
@@ -894,7 +721,6 @@ export default function PlinGoPage() {
               onGameResult={handleGameResult}
               betAmount={betAmount}
               selectedSkin={selectedSkin}
-              activePowerUps={activePowerUps}
             />
           </div>
 
@@ -940,13 +766,11 @@ export default function PlinGoPage() {
                   className="bg-gradient-to-r from-purple-900/40 to-blue-900/40 rounded-lg p-2 border border-purple-500/30 hover:from-orange-900/40 hover:to-red-900/40 hover:border-orange-500/40 hover:scale-105 transition-all duration-300 cursor-pointer group shadow-lg"
                   onClick={() => {
                     if (player.whopUsername) {
-                      console.log(`Navigating to Whop profile: @${player.whopUsername}`);
                       // Navigate to actual Whop profile
                       window.open(`https://whop.com/${player.whopUsername}`, '_blank');
                     } else {
-                      console.log(`Clicked on player: ${player.name}`);
                       // For anonymous users, show their stats
-                      alert(`${player.name}\nPoints: ${player.points.toLocaleString()}\nWins: ${player.wins}\nBiggest Win: CA$${(player.biggestWin || 0).toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+                      alert(`${player.name}\nBalance: CA$${player.balance.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}\nWins: ${player.wins}\nBiggest Win: CA$${(player.biggestWin || 0).toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
                     }
                   }}
                 >
@@ -967,9 +791,7 @@ export default function PlinGoPage() {
                             src={player.whopAvatarUrl}
                             alt={`${player.whopUsername || player.name}'s avatar`}
                             className="w-full h-full object-cover"
-                            onLoad={() => console.log('Whop avatar loaded for:', player.whopUsername)}
                             onError={(e) => {
-                              console.log('Whop avatar failed to load for:', player.whopUsername, 'falling back to generated avatar');
                               // Fallback to generated avatar if Whop avatar fails to load
                               e.currentTarget.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${player.whopUsername || player.name}&backgroundColor=ff6b35,ff8e53&radius=50`;
                             }}
@@ -979,7 +801,6 @@ export default function PlinGoPage() {
                             src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${player.whopUsername || player.name}&backgroundColor=ff6b35,ff8e53&radius=50`}
                             alt={`${player.whopUsername || player.name}'s avatar`}
                             className="w-full h-full object-cover"
-                            onLoad={() => console.log('Generated avatar loaded for:', player.whopUsername)}
                           />
                         )}
                       </div>
@@ -992,8 +813,8 @@ export default function PlinGoPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-bold text-orange-400 group-hover:text-orange-300 transition-colors duration-200">{player.points.toLocaleString()}</div>
-                      <div className="text-xs text-gray-400 group-hover:text-orange-200 transition-colors duration-200">points</div>
+                      <div className="text-xs font-bold text-orange-400 group-hover:text-orange-300 transition-colors duration-200">CA${player.balance.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      <div className="text-xs text-gray-400 group-hover:text-orange-200 transition-colors duration-200">balance</div>
                     </div>
                   </div>
                   {/* Additional stats on hover */}
@@ -1015,20 +836,15 @@ export default function PlinGoPage() {
               {skins.map((skin) => (
                 <button
                   key={skin.id}
-                  onClick={() => skin.unlocked ? setSelectedSkin(skin.id) : purchaseSkin(skin)}
+                  onClick={() => setSelectedSkin(skin.id)}
                   className={`p-2 rounded-lg text-xs font-bold transition-all duration-300 ${
                     selectedSkin === skin.id
                       ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-2xl shadow-orange-500/60 animate-pulse'
-                      : skin.unlocked
-                      ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-orange-500 hover:to-red-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/40 border border-gray-500/50'
-                      : 'bg-gradient-to-r from-gray-700 to-gray-800 text-gray-400 border border-gray-600'
+                      : 'bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-orange-500 hover:to-red-500 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/40 border border-gray-500/50'
                   }`}
                 >
                   <div className="text-sm mb-1">🎨</div>
                   <div className="text-xs font-semibold">{skin.name}</div>
-                  {!skin.unlocked && (
-                    <div className="text-xs opacity-75">{skin.cost} pts</div>
-                  )}
                 </button>
               ))}
             </div>

@@ -7,7 +7,6 @@ const userGameData = new Map<string, {
   userId: string;
   whopUsername?: string;
   balance: number;
-  points: number;
   gameHistory: Array<{
     bet: number;
     multiplier: number;
@@ -49,7 +48,6 @@ export async function GET(request: NextRequest) {
       userId,
       whopUsername: userId === 'anonymous' ? undefined : username,
       balance: 1000000, // Starting balance
-      points: 10000, // Starting points
       gameHistory: [],
       playerName: userId === 'anonymous' ? 'Anonymous Player' : name,
       selectedSkin: 'cyberpunk',
@@ -92,7 +90,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       balance,
-      points,
       gameHistory,
       playerName,
       selectedSkin,
@@ -108,7 +105,6 @@ export async function POST(request: NextRequest) {
       userId,
       whopUsername: userId === 'anonymous' ? undefined : username,
       balance: balance || 1000000,
-      points: points || 10000,
       gameHistory: gameHistory || [],
       playerName: playerName || (userId === 'anonymous' ? 'Anonymous Player' : name),
       selectedSkin: selectedSkin || 'cyberpunk',

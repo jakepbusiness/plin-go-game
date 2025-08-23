@@ -16,7 +16,6 @@ export function PlinGoStats({ gameHistory }: PlinGoStatsProps) {
   const totalLosses = gameHistory.filter(result => result.win === 0).length;
   const totalWagered = gameHistory.reduce((sum, result) => sum + result.bet, 0);
   const totalWon = gameHistory.reduce((sum, result) => sum + result.win, 0);
-  const totalPoints = Math.floor(totalWon * 0.1); // 10% of winnings as points
   const profitLoss = totalWon - totalWagered;
   const winRate = gameHistory.length > 0 ? (totalWins / gameHistory.length) * 100 : 0;
   
