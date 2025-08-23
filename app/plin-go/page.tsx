@@ -7,7 +7,7 @@ import { PlinGoStats } from '@/components/PlinGoStats';
 export default function PlinGoPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [playerName, setPlayerName] = useState('Player');
-  const [balance, setBalance] = useState(1000000);
+  const [balance, setBalance] = useState(50000);
   const [betAmount, setBetAmount] = useState(0);
   const [riskLevel, setRiskLevel] = useState<'low' | 'medium' | 'high'>('high');
   const [rows, setRows] = useState(16);
@@ -433,7 +433,7 @@ export default function PlinGoPage() {
                   WHOP PLIN-GO
                 </h1>
               </div>
-              <p className="text-orange-300 text-xs font-semibold uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.6)] text-center w-full">Ultimate Casino Experience</p>
+              <p className="text-orange-300 text-xs font-semibold uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.6)] text-center w-full">Ultimate Plin-Go Experience</p>
             </div>
 
             {/* Balance with holographic effect */}
@@ -451,7 +451,7 @@ export default function PlinGoPage() {
             {/* Jackpot Multiplier */}
             <div className="bg-gradient-to-r from-red-900/60 to-orange-900/60 rounded-lg p-2 border border-red-500/40 shadow-lg shadow-red-500/20">
               <div className="text-center">
-                <div className="text-lg font-bold text-red-400 animate-pulse">1000x</div>
+                <div className="text-lg font-bold text-red-400 animate-pulse">100x</div>
                 <div className="text-xs text-orange-300 uppercase tracking-wider">Next Big Win</div>
               </div>
             </div>

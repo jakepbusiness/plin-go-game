@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     const userData = userGameData.get(userId) || {
       userId,
       whopUsername: userId === 'anonymous' ? undefined : username,
-      balance: 1000000, // Starting balance
+      balance: 50000, // Starting balance
       gameHistory: [],
       playerName: userId === 'anonymous' ? 'Anonymous Player' : name,
       selectedSkin: 'cyberpunk',
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     const updatedData = {
       userId,
       whopUsername: userId === 'anonymous' ? undefined : username,
-      balance: balance || 1000000,
+              balance: balance || 50000,
       gameHistory: gameHistory || [],
       playerName: playerName || (userId === 'anonymous' ? 'Anonymous Player' : name),
       selectedSkin: selectedSkin || 'cyberpunk',
