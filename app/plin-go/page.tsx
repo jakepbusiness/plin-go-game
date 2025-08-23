@@ -5,7 +5,7 @@ import { PlinGoGame } from '@/components/PlinGoGame';
 import { PlinGoStats } from '@/components/PlinGoStats';
 
 export default function PlinGoPage() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [playerName, setPlayerName] = useState('Player');
   const [balance, setBalance] = useState(1000000);
   const [betAmount, setBetAmount] = useState(0);
@@ -433,14 +433,26 @@ export default function PlinGoPage() {
                   WHOP PLIN-GO
                 </h1>
               </div>
-              <p className="text-orange-300 text-xs font-semibold uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.6)] text-center w-full">Ultimate Plin-Go Experience</p>
+              <p className="text-orange-300 text-xs font-semibold uppercase tracking-wider animate-pulse shadow-[0_0_15px_rgba(249,115,22,0.6)] text-center w-full">Ultimate Casino Experience</p>
             </div>
 
             {/* Balance with holographic effect */}
             <div className="bg-gradient-to-r from-purple-900/60 to-blue-900/60 rounded-lg p-2 border border-purple-500/40 shadow-lg shadow-purple-500/20">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center mb-1">
                 <span className="text-xs font-bold text-purple-300 uppercase tracking-wider">Balance</span>
-                <span className="text-sm font-bold text-green-400 animate-pulse">${balance.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <span className="text-sm font-bold text-green-400 animate-pulse">CA${balance.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-purple-300 uppercase tracking-wider">Points</span>
+                <span className="text-sm font-bold text-orange-400 animate-pulse">5,000</span>
+              </div>
+            </div>
+
+            {/* Jackpot Multiplier */}
+            <div className="bg-gradient-to-r from-red-900/60 to-orange-900/60 rounded-lg p-2 border border-red-500/40 shadow-lg shadow-red-500/20">
+              <div className="text-center">
+                <div className="text-lg font-bold text-red-400 animate-pulse">1000x</div>
+                <div className="text-xs text-orange-300 uppercase tracking-wider">Next Big Win</div>
               </div>
             </div>
 
